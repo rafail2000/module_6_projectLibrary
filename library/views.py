@@ -29,9 +29,6 @@ class AuthorUpdateView(UpdateView):
     success_url = reverse_lazy('library:author_list')
 
 
-
-
-
 class BookListView(ListView):
     model = Book
     template_name = 'library/books_list.html'
@@ -71,15 +68,3 @@ class BookDeleteView(DeleteView):
     model = Book
     template_name = 'library/book_confirm_delete.html'
     success_url = reverse_lazy('library:books_list')
-
-
-# def books_list(request):
-#     books = Book.objects.all()
-#     context = {'books': books}
-#     return render(request, 'library/books_list.html', context)
-#
-#
-# def book_detail(request, book_id):
-#     book = Book.objects.get(id=book_id)
-#     context = {'book': book}
-#     return render(request, 'library/book_detail.html', context)

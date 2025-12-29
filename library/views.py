@@ -1,12 +1,40 @@
-from django.shortcuts import render
+from django.http import HttpResponseForbidden
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 
 from .forms import BookForm, AuthorForm
 from .models import Book, Author
 
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
+
+class ReviewBookView(LoginRequiredMixin, View):
+    def post(self, request, book_id):
+        book = get_object_or_404(Book, id=book_id)
+
+        if not request.user.has_perm('library.can_review_book'):
+            return HttpResponseForbidden('У вас нет права для редактирования книги.')
+
+        book.review = request.POST.get('review')
+        book.save()
+
+        return redirect('library:book_detail', pk=book_id)
+
+
+class RecommendBookView(LoginRequiredMixin, View):
+    def post(self, request, book_id):
+        book = get_object_or_404(Book, id=book_id)
+
+        if not request.user.has_perm('library.can_recommend_book'):
+            return HttpResponseForbidden('У вас нет права для рекомендации книги.')
+
+        book.recommend = True
+        book.save()
+
+        return redirect('library:book_detail', pk=book_id)
+
 
 
 class AuthorListView(ListView):

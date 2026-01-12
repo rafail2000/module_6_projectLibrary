@@ -8,6 +8,9 @@ from .models import Book, Author
 from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+from django.core.cache import cache
 
 
 class ReviewBookView(LoginRequiredMixin, View):
@@ -42,6 +45,13 @@ class AuthorListView(ListView):
     template_name = 'library/author_list.html'
     context_object_name = 'authors'
 
+    def get_queryset(self):
+        queryset = cache.get('authors_queryset')
+        if not queryset:
+            queryset = super().get_queryset()
+            cache.set('authors_queryset', queryset, 60 * 15)
+        return queryset
+
 
 
 class AuthorCreateView(CreateView):
@@ -58,11 +68,11 @@ class AuthorUpdateView(UpdateView):
     success_url = reverse_lazy('library:author_list')
 
 
-class BookListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
+@method_decorator(cache_page(60 * 15), name='dispatch')
+class BookListView(LoginRequiredMixin, ListView):
     model = Book
     template_name = 'library/books_list.html'
     context_object_name = 'books'
-    permission_required = 'library.view_book'
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -77,6 +87,7 @@ class BookCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     permission_required = 'library.add_book'
 
 
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class BookDetailView(LoginRequiredMixin, DetailView):
     model = Book
     template_name = 'library/book_detail.html'

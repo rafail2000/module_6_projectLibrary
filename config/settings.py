@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 
 from django.conf.global_settings import AUTH_USER_MODEL, EMAIL_BACKEND, EMAIL_HOST, EMAIL_PORT, EMAIL_USE_TLS, \
-    EMAIL_USE_SSL, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DEFAULT_FROM_EMAIL, LOGIN_REDIRECT_URL, LOGIN_URL
+    EMAIL_USE_SSL, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DEFAULT_FROM_EMAIL, LOGIN_REDIRECT_URL, LOGIN_URL, CACHES
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -153,3 +153,10 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 LOGIN_REDIRECT_URL = 'library:books_list'
 LOGIN_URL = 'users:login'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://localhost:6379/1',
+    }
+}

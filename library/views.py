@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 
 from .forms import BookForm, AuthorForm
+from .services import BookService
 from .models import Book, Author
 
 from django.views.generic import ListView, DetailView, View
@@ -53,7 +54,6 @@ class AuthorListView(ListView):
         return queryset
 
 
-
 class AuthorCreateView(CreateView):
     model = Author
     form_class = AuthorForm
@@ -96,6 +96,11 @@ class BookDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['author_books_count'] = Book.objects.filter(author=self.object.author).count()
+
+        book_id = self.object.id
+        context['average_rating'] = BookService.calculate_average_rating(book_id)
+        context['is_popular'] = BookService.is_popular(book_id)
+
         return context
 
 

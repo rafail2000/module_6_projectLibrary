@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import sys
 
 from django.conf.global_settings import AUTH_USER_MODEL, EMAIL_BACKEND, EMAIL_HOST, EMAIL_PORT, EMAIL_USE_TLS, \
     EMAIL_USE_SSL, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DEFAULT_FROM_EMAIL, LOGIN_REDIRECT_URL, LOGIN_URL, CACHES
@@ -162,3 +163,11 @@ CACHES = {
         'LOCATION': 'redis://redis:6379/1',
     }
 }
+
+if 'test' in sys.argv:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backend.sqlite3',
+            'NAME': BASE_DIR / 'test_db.sqlite3',
+        }
+    }
